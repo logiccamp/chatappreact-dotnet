@@ -1,9 +1,12 @@
 import { encode, decode } from "@msgpack/msgpack";
+import { baseUrl } from "./api";
 
 let socket = null;
 
 export function connectSocket(userId, onMessage) {
-  socket = new WebSocket(`ws://localhost:5169/ws/chat?userId=${userId}`);
+  var url = baseUrl.replace("http", "ws").replace("/api/", "/ws/chat");
+  console.log("Connecting to WebSocket at:", url);
+  socket = new WebSocket(`${url}?userId=${userId}`);
   socket.binaryType = "arraybuffer";
 
   socket.onopen = () => {
