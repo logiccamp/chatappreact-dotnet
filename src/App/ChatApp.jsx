@@ -95,22 +95,24 @@ export default function ChatApp() {
         if (!mounted) return;
 
         const conv = convJson.data;
-        setConversation(conv);
-
-        // 2️⃣ fetch messages
-        const msgRes = await fetch(
-          `${baseUrl}chats/messages/${conv.id}`,
-          {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+        if(conv){
+          setConversation(conv);
+  
+          // 2️⃣ fetch messages
+          const msgRes = await fetch(
+            `${baseUrl}chats/messages/${conv.id}`,
+            {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
           }
+          );
+          const msgJson = await msgRes.json();
+  
+          if (!mounted) return;
+          setInitialMessages(msgJson.data.items ?? msgJson);
         }
-        );
-        const msgJson = await msgRes.json();
-
-        if (!mounted) return;
-        setInitialMessages(msgJson.data.items ?? msgJson);
         setIsLoading(false)
       } catch (err) {
         console.error("Failed to load chat:", err);

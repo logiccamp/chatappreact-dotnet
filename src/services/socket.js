@@ -14,18 +14,20 @@ export function connectSocket(userId, onMessage) {
   };
 
 socket.onmessage = (event) => {
-  const envelope = decode(new Uint8Array(event.data));
-
-  // IMPORTANT: MessagePack keeps C# casing
+  console.log("📩 Message received", event);
+  var envelope = JSON.parse(event.data);
+  // const envelope = decode(new Uint8Array(event.data));
+  console.log("Decoded envelope:", envelope);
+  // // IMPORTANT: MessagePack keeps C# casing
   const type = envelope.Type;
   const payloadBytes = envelope.Payload;
   // payloadBytes is already Uint8Array → decode it once
-  const payload = decode(payloadBytes);
+  const payload = JSON.parse(payloadBytes);
   onMessage(type, payload);
 };
 
-  socket.onclose = () => {
-    console.log("❌ Disconnected");
+  socket.onclose = (event) => {
+    console.log("❌ Disconnected", event);
   };
 }
 
@@ -33,9 +35,9 @@ export function send(Type, payload) {
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
   socket.send(
-    encode({
+    JSON.stringify({
       Type,
-      Payload: encode(payload)
+      Payload: JSON.stringify(payload)
     })
   );
 }
